@@ -389,10 +389,11 @@ footer {
 /* Text Container */
 .text-container {
     display: inline-block;
-    margin-left: 680px;
+    margin-left: 650px;
     margin-top: -485px;
-    margin-bottom: 20px;
+    margin-bottom: 100px;
     max-width: 550px;
+    width: 550px;
     vertical-align: top;
     font-family: 'Playfair Display', serif;
     font-weight: 600;
