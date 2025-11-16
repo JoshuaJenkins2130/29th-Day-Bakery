@@ -322,7 +322,7 @@ section h2 {
     vertical-align: top;
     z-index: 3;
     position: relative;
-    top: 65px;
+    top: 30px;
     text-align: center;
     width: 550px;
 }
@@ -366,7 +366,7 @@ footer {
     position: relative;
     left: 7rem;
     margin: 20px 20px 20px 7rem;
-    margin-top: -100px;
+    margin-top: -130px;
     padding: 0;
     border: none;
     background: none;
@@ -389,7 +389,7 @@ footer {
 /* Text Container */
 .text-container {
     display: inline-block;
-    margin-left: 650px;
+    margin-left: 680px;
     margin-top: -485px;
     margin-bottom: 20px;
     max-width: 550px;
