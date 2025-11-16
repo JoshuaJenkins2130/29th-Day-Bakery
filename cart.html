@@ -43,8 +43,61 @@
     <div id="cart-total" style="text-align: right; font-size: 1.5rem; font-family: 'Playfair Display', serif; margin: 1rem 0;">
         <strong>Total: $<span id="total-amount">0.00</span></strong>
     </div>
-    <div id="paypal-button-container"></div>
+    <button id="proceed-checkout-btn" class="proceed-checkout-btn">Proceed to Checkout</button>
 </main>
+
+<!-- Checkout Form Modal -->
+<div id="checkout-modal" class="checkout-modal">
+    <div class="checkout-modal-content">
+        <span class="close-checkout">&times;</span>
+        <h2>Checkout Information</h2>
+        <form id="checkout-form">
+            <div class="form-group">
+                <label for="customer-name">Name *</label>
+                <input type="text" id="customer-name" name="customer-name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="customer-phone">Phone Number *</label>
+                <input type="tel" id="customer-phone" name="customer-phone" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Order Type *</label>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="order-type" value="pickup" required> Pickup
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="order-type" value="delivery" required> Delivery
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group" id="delivery-address-group" style="display: none;">
+                <label for="delivery-address">Delivery Address *</label>
+                <textarea id="delivery-address" name="delivery-address" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="order-notes">Notes (Optional)</label>
+                <textarea id="order-notes" name="order-notes" rows="3" placeholder="Any special instructions..."></textarea>
+            </div>
+            
+            <button type="submit" class="next-btn">Next</button>
+        </form>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div id="confirmation-modal" class="checkout-modal">
+    <div class="checkout-modal-content">
+        <span class="close-confirmation">&times;</span>
+        <h2>Confirm Your Order</h2>
+        <div id="confirmation-details"></div>
+        <div id="paypal-button-container"></div>
+    </div>
+</div>
 <script>
     function updateCart() {
         const cartItems = document.getElementById('cart-items');
@@ -99,52 +152,186 @@
         }
     });
 
+    // Store customer information
+    let customerInfo = {};
+
     // Initialize cart on page load
     document.addEventListener('DOMContentLoaded', function() {
         updateCart();
         
-        // Initialize PayPal button
-        paypal.Buttons({
-            createOrder: function(data, actions) {
-                const cart = JSON.parse(localStorage.getItem('cart')) || [];
-                const total = cart.reduce((sum, item) => sum + item.total, 0);
-                
-                return actions.order.create({
-                    purchase_units: [{
-                        description: '29th Day Bakery - Pies',
-                        amount: {
-                            currency_code: 'USD',
-                            value: total.toFixed(2),
-                            breakdown: {
-                                item_total: {
-                                    currency_code: 'USD',
-                                    value: total.toFixed(2)
-                                }
-                            }
-                        },
-                        items: cart.map(item => ({
-                            name: item.name,
-                            unit_amount: {
-                                currency_code: 'USD',
-                                value: item.price.toFixed(2)
-                            },
-                            quantity: item.quantity.toString()
-                        }))
-                    }]
-                });
-            },
-            onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {
-                    alert('Payment successful! Thank you, ' + details.payer.name.given_name + '!');
-                    // Clear the cart
-                    localStorage.removeItem('cart');
-                    updateCart();
-                });
-            },
-            onError: function(err) {
-                console.error('PayPal error:', err);
-                alert('An error occurred with PayPal. Please try again.');
+        const proceedBtn = document.getElementById('proceed-checkout-btn');
+        const checkoutModal = document.getElementById('checkout-modal');
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const closeCheckout = document.querySelector('.close-checkout');
+        const closeConfirmation = document.querySelector('.close-confirmation');
+        const checkoutForm = document.getElementById('checkout-form');
+        const orderTypeRadios = document.querySelectorAll('input[name="order-type"]');
+        const deliveryAddressGroup = document.getElementById('delivery-address-group');
+        const deliveryAddress = document.getElementById('delivery-address');
+        
+        // Show/hide proceed button based on cart
+        function toggleProceedButton() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length === 0) {
+                proceedBtn.style.display = 'none';
+            } else {
+                proceedBtn.style.display = 'block';
             }
-        }).render('#paypal-button-container');
+        }
+        toggleProceedButton();
+        
+        // Override updateCart to toggle button
+        const originalUpdateCart = window.updateCart;
+        window.updateCart = function() {
+            originalUpdateCart();
+            toggleProceedButton();
+        };
+        
+        // Show checkout modal
+        proceedBtn.addEventListener('click', function() {
+            checkoutModal.classList.add('show');
+        });
+        
+        // Close modals
+        closeCheckout.addEventListener('click', function() {
+            checkoutModal.classList.remove('show');
+        });
+        
+        closeConfirmation.addEventListener('click', function() {
+            confirmationModal.classList.remove('show');
+        });
+        
+        // Show/hide delivery address based on order type
+        orderTypeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'delivery') {
+                    deliveryAddressGroup.style.display = 'block';
+                    deliveryAddress.setAttribute('required', 'required');
+                } else {
+                    deliveryAddressGroup.style.display = 'none';
+                    deliveryAddress.removeAttribute('required');
+                }
+            });
+        });
+        
+        // Handle form submission
+        checkoutForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Store customer information
+            customerInfo = {
+                name: document.getElementById('customer-name').value,
+                phone: document.getElementById('customer-phone').value,
+                orderType: document.querySelector('input[name="order-type"]:checked').value,
+                deliveryAddress: document.getElementById('delivery-address').value,
+                notes: document.getElementById('order-notes').value
+            };
+            
+            // Show confirmation modal
+            showConfirmation();
+            checkoutModal.classList.remove('show');
+            confirmationModal.classList.add('show');
+        });
+        
+        // Show confirmation details and payment
+        function showConfirmation() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const total = cart.reduce((sum, item) => sum + item.total, 0);
+            
+            let confirmationHTML = `
+                <div class="confirmation-section">
+                    <h3>Customer Information</h3>
+                    <p><strong>Name:</strong> ${customerInfo.name}</p>
+                    <p><strong>Phone:</strong> ${customerInfo.phone}</p>
+                    <p><strong>Order Type:</strong> ${customerInfo.orderType.charAt(0).toUpperCase() + customerInfo.orderType.slice(1)}</p>
+                    ${customerInfo.orderType === 'delivery' ? `<p><strong>Delivery Address:</strong> ${customerInfo.deliveryAddress}</p>` : ''}
+                    ${customerInfo.notes ? `<p><strong>Notes:</strong> ${customerInfo.notes}</p>` : ''}
+                </div>
+                
+                <div class="confirmation-section">
+                    <h3>Order Summary</h3>
+                    <table class="confirmation-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            cart.forEach(item => {
+                confirmationHTML += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>$${item.total.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            confirmationHTML += `
+                        </tbody>
+                    </table>
+                    <p class="confirmation-total"><strong>Total: $${total.toFixed(2)}</strong></p>
+                </div>
+                
+                <div class="confirmation-section">
+                    <h3>Payment Method</h3>
+                </div>
+            `;
+            
+            document.getElementById('confirmation-details').innerHTML = confirmationHTML;
+            
+            // Initialize PayPal button in confirmation modal
+            document.getElementById('paypal-button-container').innerHTML = '';
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            description: '29th Day Bakery - Pies',
+                            amount: {
+                                currency_code: 'USD',
+                                value: total.toFixed(2),
+                                breakdown: {
+                                    item_total: {
+                                        currency_code: 'USD',
+                                        value: total.toFixed(2)
+                                    }
+                                }
+                            },
+                            items: cart.map(item => ({
+                                name: item.name,
+                                unit_amount: {
+                                    currency_code: 'USD',
+                                    value: item.price.toFixed(2)
+                                },
+                                quantity: item.quantity.toString()
+                            }))
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function(details) {
+                        // Close confirmation modal
+                        confirmationModal.classList.remove('show');
+                        
+                        // Show success message
+                        alert('🎉 Your order was sent to the kitchen! Thank you, ' + customerInfo.name + '!');
+                        
+                        // Clear the cart and customer info
+                        localStorage.removeItem('cart');
+                        customerInfo = {};
+                        checkoutForm.reset();
+                        updateCart();
+                    });
+                },
+                onError: function(err) {
+                    console.error('PayPal error:', err);
+                    alert('An error occurred with PayPal. Please try again.');
+                }
+            }).render('#paypal-button-container');
+        }
     });
 </script>
