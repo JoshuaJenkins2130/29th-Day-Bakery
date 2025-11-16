@@ -6,6 +6,7 @@
     <title>Cart - 29th Day Bakery</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://www.paypal.com/sdk/js?client-id=AdZ77IXoXY2HtrRKcMSfv8Z1BXK3j7LY2t9eKSgpz-fFnH2veX9Y6N7gh-HN_VtHjuwXBYGZ91dnPZId&currency=USD"></script>
 </head>
 <body>
     <header>
@@ -39,13 +40,18 @@
         </thead>
         <tbody id="cart-items"></tbody>
     </table>
-    <button class="checkout-button">Checkout</button>
+    <div id="cart-total" style="text-align: right; font-size: 1.5rem; font-family: 'Playfair Display', serif; margin: 1rem 0;">
+        <strong>Total: $<span id="total-amount">0.00</span></strong>
+    </div>
+    <div id="paypal-button-container"></div>
 </main>
 <script>
     function updateCart() {
         const cartItems = document.getElementById('cart-items');
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         cartItems.innerHTML = '';
+        let total = 0;
+        
         cart.forEach((item, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -56,7 +62,18 @@
                 <td><button class="remove-item" data-index="${index}">Remove</button></td>
             `;
             cartItems.appendChild(row);
+            total += item.total;
         });
+        
+        // Update total display
+        document.getElementById('total-amount').textContent = total.toFixed(2);
+        
+        // Show/hide PayPal button based on cart contents
+        if (cart.length === 0) {
+            document.getElementById('paypal-button-container').style.display = 'none';
+        } else {
+            document.getElementById('paypal-button-container').style.display = 'block';
+        }
     }
 
     // Event delegation for quantity updates
@@ -83,5 +100,51 @@
     });
 
     // Initialize cart on page load
-    document.addEventListener('DOMContentLoaded', updateCart);
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCart();
+        
+        // Initialize PayPal button
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const total = cart.reduce((sum, item) => sum + item.total, 0);
+                
+                return actions.order.create({
+                    purchase_units: [{
+                        description: '29th Day Bakery - Pies',
+                        amount: {
+                            currency_code: 'USD',
+                            value: total.toFixed(2),
+                            breakdown: {
+                                item_total: {
+                                    currency_code: 'USD',
+                                    value: total.toFixed(2)
+                                }
+                            }
+                        },
+                        items: cart.map(item => ({
+                            name: item.name,
+                            unit_amount: {
+                                currency_code: 'USD',
+                                value: item.price.toFixed(2)
+                            },
+                            quantity: item.quantity.toString()
+                        }))
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    alert('Payment successful! Thank you, ' + details.payer.name.given_name + '!');
+                    // Clear the cart
+                    localStorage.removeItem('cart');
+                    updateCart();
+                });
+            },
+            onError: function(err) {
+                console.error('PayPal error:', err);
+                alert('An error occurred with PayPal. Please try again.');
+            }
+        }).render('#paypal-button-container');
+    });
 </script>
