@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - 29th Day Bakery</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <img src="29th-day-logo.png" alt="Website Logo" class="Logo">
+        <h1></h1>
+          <nav>
+            <ul>
+                <li><a href="tawnys_bakes.html">Home</a></li>
+                <li><a href="behind-the-pie.html">Behind the Pie</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="cart.html">Cart</a></li>
+            </ul>
+        </nav>
+        <a href="https://www.facebook.com/profile.php?id=61577352540225"
+        target="_blank" class="facebook-link">
+            <img src="Facebook_Image.jpg" alt="Facebook Icon"
+            class="facebook-icon">
+        </a>
+    </header>
+    <main id="cart">
+    <h2>Your Cart</h2>
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="cart-items"></tbody>
+    </table>
+    <button class="checkout-button">Checkout</button>
+</main>
+<script>
+    function updateCart() {
+        const cartItems = document.getElementById('cart-items');
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cartItems.innerHTML = '';
+        cart.forEach((item, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.name}</td>
+                <td>$${item.price.toFixed(2)}</td>
+                <td><input type="number" value="${item.quantity}" min="1" data-index="${index}"></td>
+                <td>$${item.total.toFixed(2)}</td>
+                <td><button class="remove-item" data-index="${index}">Remove</button></td>
+            `;
+            cartItems.appendChild(row);
+        });
+    }
+
+    // Event delegation for quantity updates
+    document.getElementById('cart-items').addEventListener('change', function(e) {
+        if (e.target.tagName === 'INPUT') {
+            const index = e.target.dataset.index;
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart[index].quantity = parseInt(e.target.value) || 1;
+            cart[index].total = cart[index].price * cart[index].quantity;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCart();
+        }
+    });
+
+    // Event delegation for remove buttons
+    document.getElementById('cart-items').addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-item')) {
+            const index = e.target.dataset.index;
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCart();
+        }
+    });
+
+    // Initialize cart on page load
+    document.addEventListener('DOMContentLoaded', updateCart);
+</script>
