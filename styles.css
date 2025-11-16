@@ -651,15 +651,15 @@ footer {
         display: block;
         width: 100%;
         position: static;
-        margin: 20px 0;
+        margin: 10px 0;
         left: 0;
         padding: 0;
     }
     
     .centered-image {
         width: 100%;
-        max-width: 140px;
-        height: 200px;
+        max-width: 200px;
+        height: 280px;
         margin: 0 auto;
     }
     
