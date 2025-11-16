@@ -849,7 +849,7 @@ footer {
         display: block;
         width: 100%;
         position: static;
-        margin: 20px 0 10px 0;
+        margin: -40px 0 10px 0;
         left: 0;
         padding: 0;
     }
@@ -877,6 +877,7 @@ footer {
         text-align: center;
         position: static;
         top: 0;
+        width: 100%;
     }
     
     #behind-the-pie::before {
