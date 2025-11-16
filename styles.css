@@ -389,8 +389,8 @@ footer {
 /* Text Container */
 .text-container {
     display: inline-block;
-    margin-left: 250px;
-    margin-top: -40px;
+    margin-left: 650px;
+    margin-top: 20px;
     margin-bottom: 20px;
     max-width: 550px;
     vertical-align: top;
@@ -399,6 +399,7 @@ footer {
     font-size: 1.2rem;
     z-index: 3;
     background: transparent;
+    text-align: center;
 }
 
 /* Behind the Pie Section */
