@@ -560,39 +560,171 @@ footer {
 
 /* Responsive design */
 @media (max-width: 768px) {
+    /* Header adjustments */
+    header {
+        min-height: 180px;
+        padding: 0.5rem 0;
+    }
+    
+    .Logo {
+        width: 120px;
+        top: 40%;
+    }
+    
+    /* Navigation for mobile */
+    nav {
+        bottom: 10px;
+        width: 100%;
+        padding: 0 1rem;
+    }
+    
+    nav ul li {
+        margin: 0 1rem;
+    }
+    
+    nav ul li a {
+        font-size: 0.9rem;
+    }
+    
+    .facebook-icon {
+        width: 30px;
+        height: 30px;
+    }
+    
+    /* Home page layout - stack vertically */
+    .home-layout {
+        flex-direction: column;
+        gap: 2rem;
+        padding: 0 1rem;
+    }
+    
+    .home-text {
+        padding-right: 0;
+        text-align: left;
+    }
+    
+    .home-text h2 {
+        font-size: 1.8rem;
+    }
+    
+    .home-text p {
+        font-size: 1rem;
+    }
+    
+    /* Pie carousel for mobile */
+    .pie-carousel {
+        align-items: center;
+        width: 100%;
+    }
+    
+    .pie-thumbnails {
+        gap: 1rem;
+    }
+    
+    .pie-thumb {
+        width: 120px;
+        height: 120px;
+    }
+    
+    /* Modal adjustments */
+    .pie-modal-content {
+        padding: 1.5rem;
+        width: 95%;
+    }
+    
+    .pie-modal-content img {
+        width: 100%;
+        max-width: 250px;
+        height: 250px;
+    }
+    
+    .pie-modal-content h3 {
+        font-size: 1.5rem;
+    }
+    
+    .pie-modal-content p {
+        font-size: 1rem;
+    }
+    
+    /* Behind the Pie page */
     .image-container {
         display: block;
         width: 100%;
         position: static;
-        margin: 20px 0 20px 0; /* Fixed negative margin */
+        margin: 20px 0;
+        left: 0;
+        padding: 0;
     }
+    
     .centered-image {
         width: 100%;
         max-width: 280px;
-        height: 400px; /* Consistent with desktop */
+        height: 400px;
         margin: 0 auto;
     }
+    
     .text-container {
         display: block;
         margin-left: 0;
-        margin-top: 0;
+        margin-top: 1rem;
         max-width: 100%;
+        padding: 0 1rem;
     }
+    
     #behind-the-pie h2 {
         display: block;
         margin-left: 0;
         margin-top: 0;
         text-align: center;
         position: static;
+        top: 0;
     }
+    
+    #behind-the-pie::before {
+        bottom: -10rem;
+    }
+    
+    /* Menu page */
     #menu {
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: 1.5rem;
         padding: 1rem;
     }
+    
     .pie-item img {
         width: 200px;
         height: 200px;
+    }
+    
+    .pie-item h3 {
+        font-size: 1.3rem;
+    }
+    
+    /* Cart page */
+    #cart {
+        padding: 1rem;
+    }
+    
+    .cart-table {
+        font-size: 0.85rem;
+    }
+    
+    .cart-table th, .cart-table td {
+        padding: 0.5rem;
+    }
+    
+    .cart-table td input {
+        width: 40px;
+        padding: 0.3rem;
+    }
+    
+    #cart-total {
+        font-size: 1.2rem;
+    }
+    
+    /* Main content padding */
+    main {
+        padding: 0 0.5rem 3rem 0.5rem;
     }
 }
 ```
