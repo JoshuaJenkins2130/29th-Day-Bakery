@@ -64,6 +64,11 @@
             </div>
             
             <div class="form-group">
+                <label for="customer-email">Email Address *</label>
+                <input type="email" id="customer-email" name="customer-email" required>
+            </div>
+            
+            <div class="form-group">
                 <label>Order Type *</label>
                 <div class="radio-group">
                     <label class="radio-label">
@@ -223,6 +228,7 @@
             customerInfo = {
                 name: document.getElementById('customer-name').value,
                 phone: document.getElementById('customer-phone').value,
+                email: document.getElementById('customer-email').value,
                 orderType: document.querySelector('input[name="order-type"]:checked').value,
                 deliveryAddress: document.getElementById('delivery-address').value,
                 notes: document.getElementById('order-notes').value
@@ -243,6 +249,7 @@
                 <div class="confirmation-section">
                     <h3>Customer Information</h3>
                     <p><strong>Name:</strong> ${customerInfo.name}</p>
+                    <p><strong>Email:</strong> ${customerInfo.email}</p>
                     <p><strong>Phone:</strong> ${customerInfo.phone}</p>
                     <p><strong>Order Type:</strong> ${customerInfo.orderType.charAt(0).toUpperCase() + customerInfo.orderType.slice(1)}</p>
                     ${customerInfo.orderType === 'delivery' ? `<p><strong>Delivery Address:</strong> ${customerInfo.deliveryAddress}</p>` : ''}
@@ -290,7 +297,7 @@
             paypal.Buttons({
                 createOrder: function(data, actions) {
                     // Build detailed order description with customer info
-                    let orderDetails = `Customer: ${customerInfo.name} | Phone: ${customerInfo.phone} | ${customerInfo.orderType.toUpperCase()}`;
+                    let orderDetails = `Customer: ${customerInfo.name} | Email: ${customerInfo.email} | Phone: ${customerInfo.phone} | ${customerInfo.orderType.toUpperCase()}`;
                     if (customerInfo.orderType === 'delivery') {
                         orderDetails += ` | Address: ${customerInfo.deliveryAddress}`;
                     }
@@ -304,6 +311,7 @@
                             description: orderDetails.substring(0, 127), // PayPal limit is 127 chars
                             custom_id: JSON.stringify({
                                 name: customerInfo.name,
+                                email: customerInfo.email,
                                 phone: customerInfo.phone,
                                 orderType: customerInfo.orderType,
                                 deliveryAddress: customerInfo.deliveryAddress || 'N/A',
