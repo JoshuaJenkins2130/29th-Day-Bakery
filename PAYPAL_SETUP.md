@@ -14,7 +14,7 @@
 4. **Create an App**
    - Click on "Apps & Credentials" 
    - Click "Create App" button
-   - Name it something like "29th Day Bakery"
+   - Name it something like "Honey Holler"
    - Select "Merchant" as the app type
 
 5. **Get Your Client ID**

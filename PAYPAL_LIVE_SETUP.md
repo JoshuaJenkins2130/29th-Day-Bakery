@@ -6,7 +6,7 @@
 2. **Switch from "Sandbox" to "Live"** using the toggle in the top right corner
 3. Click on **"Apps & Credentials"** in the left menu
 4. Under the **"Live"** section, click **"Create App"**
-5. Give your app a name (e.g., "29th Day Bakery Website")
+5. Give your app a name (e.g., "Honey Holler Website")
 6. Click **"Create App"**
 7. Copy your **Live Client ID** (it will look similar to the sandbox one but different)
 
