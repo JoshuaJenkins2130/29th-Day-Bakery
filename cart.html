@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Using sandbox for testing - Replace with live client ID when ready -->
-    <script src="https://www.paypal.com/sdk/js?client-id=AdZ77IXoXY2HtrRKcMSfv8Z1BXK3j7LY2t9eKSgpz-fFnH2veX9Y6N7gh-HN_VtHjuwXBYGZ91dnPZId&currency=USD"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AdZ77IXoXY2HtrRKcMSfv8Z1BXK3j7LY2t9eKSgpz-fFnH2veX9Y6N7gh-HN_VtHjuwXBYGZ91dnPZId&currency=USD&enable-funding=venmo"></script>
 </head>
 <body>
     <header>
@@ -102,6 +102,11 @@
         <h2>Confirm Your Order</h2>
         <div id="confirmation-details"></div>
         <div id="paypal-button-container"></div>
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center;">
+            <p style="margin-bottom: 10px; font-family: 'Playfair Display', serif;">Or pay with Cash App:</p>
+            <a href="https://cash.app/$YourCashTag" target="_blank" class="cashapp-button" style="display: inline-block; background-color: #00D632; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; font-family: Arial, sans-serif;">Pay with Cash App</a>
+            <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">You'll need to manually enter the amount: $<span id="cashapp-total">0.00</span></p>
+        </div>
     </div>
 </div>
 <script>
@@ -291,6 +296,9 @@
             `;
             
             document.getElementById('confirmation-details').innerHTML = confirmationHTML;
+            
+            // Update Cash App total
+            document.getElementById('cashapp-total').textContent = total.toFixed(2);
             
             // Initialize PayPal button in confirmation modal
             document.getElementById('paypal-button-container').innerHTML = '';
