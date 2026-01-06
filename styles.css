@@ -29,7 +29,7 @@ header {
     position: relative;
     z-index: 5;
     border-bottom: 1px solid black;
-    overflow-x: hidden;
+    overflow: hidden;
     width: 100%;
 }
 
